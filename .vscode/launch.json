@@ -1,0 +1,10 @@
+{
+        "configurations": [
+        {
+            "name": "Run Kasir",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/KasirGuiRunner.py"
+        }
+    ]
+}

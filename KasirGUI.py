@@ -142,7 +142,7 @@ def fungsi_pembayaran():
 main = tk.Tk()
 main.title("windowKasir")
 main.config(bg="#e9caf2")
-main.geometry("700x345")
+main.geometry("900x565")
 
 # window GUI tidak bisa diubah ukurannya
 main.resizable(False, False)
