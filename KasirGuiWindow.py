@@ -28,6 +28,13 @@ class KasirGuiWindow(tk.Tk):
 
         # bikin widget
         self.comboBoxCanvasLeft = None
+        self.listBoxCanvasKanan = None
+        self.jumlahBarangEntryBoxCanvasLeft = None
+        self.buttonHapusRight = None
+        self.buttonKeluarTop = None
+        self.buttonTambahLeft = None
+        self.buttonPembayaranRight = None
+        self.labelNamaBarang = None
 
 
     def window_initializer(self):
@@ -61,6 +68,13 @@ class KasirGuiWindow(tk.Tk):
             background = config.WHITE,
             anchor = config.ANCHOR_CENTER,
             borderwidth = config.NON_BORDER
+        )
+
+        self.style.map(
+            "Keluar.TButton",
+            background = [
+                ('active', config.WHITE)
+            ]
         )
 
         self.style.configure(
@@ -99,6 +113,15 @@ class KasirGuiWindow(tk.Tk):
             ]
         )
 
+        self.style.configure(
+            "Pembayaran.TButton",
+            font = (config.FONT_TYPE, config.FONT_BUTTON_SIZE),
+            foreground = config.WHITE,
+            background = config.DARK_BLUE,
+            anchor = config.ANCHOR_CENTER,
+            borderwidth = config.NON_BORDER
+        )
+
 
     def draw_canvas(self):
         # Bikin Canvas atap
@@ -109,6 +132,15 @@ class KasirGuiWindow(tk.Tk):
             highlightthickness = config.NON_BORDER_CANVAS,
         )
         self.canvasBlockTop.pack(side = "top", fill = "x")
+        
+        # Bikin Canvas Bawah
+        self.footerCanvas = tk.Canvas(
+            self,
+            height = config.BOTTOM_CANVAS_HEIGHT,
+            bg = config.WHITE,
+            highlightthickness = config.NON_BORDER_CANVAS
+        )
+        self.footerCanvas.pack(side = "bottom", fill = "x")
 
         # Bikin Canvas kiri
         self.canvasBlockLeft = tk.Canvas(
@@ -116,8 +148,7 @@ class KasirGuiWindow(tk.Tk):
             width = config.LEFT_CANVAS_WIDTH,
             height = config.LEFT_CANVAS_HEIGHT,
             bg = config.OLIVE_GREEN,
-            highlightthickness = config.NON_BORDER_CANVAS,
-            
+            highlightthickness = config.NON_BORDER_CANVAS
         )
         self.canvasBlockLeft.pack(side = "left")
 
@@ -130,6 +161,7 @@ class KasirGuiWindow(tk.Tk):
             highlightthickness = config.NON_BORDER_CANVAS
         )
         self.canvasBlockRight.pack(side = "right")        
+
 
     # Method pembuatan widget 
     def draw_widget(self):
@@ -170,7 +202,7 @@ class KasirGuiWindow(tk.Tk):
         )
         self.buttonKeluarTop.place(
             height = config.BUTTON_HEIGHT,
-            width = config.BUTTON_WIDTH,
+            width = config.BUTTON_KELUAR_ATAS_WIDTH,
             x = config.START_X_BUTTON_KELUAR,
             y = config.START_Y_BUTTON_KELUAR
         )
@@ -202,7 +234,20 @@ class KasirGuiWindow(tk.Tk):
             y = config.START_Y_BUTTON_HAPUS
         )
 
-        self.listBoxCanvasKanan = tk.Listbox(
+        self.buttonPembayaranRight = ttk.Button(
+            self.canvasBlockRight,
+            text = config.FONT_BUTTON_PEMBAYARAN_TEXT,
+            style = "Pembayaran.TButton",
+            cursor = config.CURSOR_HAND,   
+        )
+        self.buttonPembayaranRight.place(
+            width = config.BUTTON_WIDTH,
+            height = config.BUTTON_HEIGHT,
+            x = config.START_X_BUTTON_PEMBAYARAN,
+            y = config.START_Y_BUTTON_PEMBAYARAN
+        )
+
+        self.frameCanvasKanan = tk.Listbox(
             self.canvasBlockRight,
             font = (config.FONT_TYPE, config.FONT_SIZE),
             background = config.WHITE,
@@ -210,8 +255,44 @@ class KasirGuiWindow(tk.Tk):
             borderwidth = config.NON_BORDER,
             cursor = "hand2",
         )
-        self.listBoxCanvasKanan.place(
-            width = config.LIST_BOX_CANVAS_KANAN_WIDTH,
-            x = config.START_X_LIST_BOX_CANVAS_KANAN,
-            y = config.START_Y_LIST_BOX_CANVAS_KIRI
+        self.frameCanvasKanan.place(
+            width = config.FRAME_CANVAS_KANAN_WIDTH,
+            x = config.START_X_FRAME_CANVAS_KANAN,
+            y = config.START_Y_FRAME_CANVAS_KIRI
+        )
+
+        self.labelNamaBarang = tk.Label(
+            self.canvasBlockLeft,
+            font = (config.FONT_TYPE, config.FONT_SIZE),
+            text = config.NAMA_BARANG_MSG,
+            background = self.canvasBlockLeft.cget("bg"),
+            foreground = config.BLACK  
+        )
+        self.labelNamaBarang.place(
+            x = config.START_X_NAMA_BARANG,
+            y = config.START_Y_NAMA_BARANG
+        )
+
+        self.labelInputJumlah = tk.Label(
+            self.canvasBlockLeft,
+            font = (config.FONT_TYPE, config.FONT_SIZE),
+            text = config.JUMLAH_BARANG_MSG,
+            background = self.canvasBlockLeft.cget("bg"),
+            foreground = config.BLACK  
+        )
+        self.labelInputJumlah.place(
+            x = config.START_X_INPUT_JUMLAH,
+            y = config.START_Y_INPUT_JUMLAH
+        )
+
+        self.labelFooterTanggal = tk.Label(
+            self.footerCanvas,
+            font = (config.FONT_TYPE, config.FONT_SIZE),
+            text = "Tanggal : 00/00/0000",
+            background = self.footerCanvas.cget("bg"),
+            foreground = config.BLACK
+        )
+        self.labelFooterTanggal.place(
+            x = config.START_X_LABEL_TANGGAL,
+            y = config.START_Y_LABEL_TANGGAL
         )

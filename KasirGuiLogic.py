@@ -22,9 +22,17 @@ class KasirGuiLogic:
             self.windowKasir.jumlahBarangEntryBoxCanvasLeft.delete(0, 'end')
 
     def keluar_app(self):
-            konfirmasi = messagebox.askyesno(title = "Keluar", message = config.EXIT_MSG)
-            if konfirmasi:
-                messagebox.showinfo(title = "YAH", message = config.CONFIRM_MSG)
-                time.sleep(config.SLEEP_DURATION)
-                self.windowKasir.destroy()     
+        konfirmasi = messagebox.askyesno(title = "Keluar", message = config.EXIT_MSG)
+        if konfirmasi:
+            messagebox.showinfo(title = "YAH", message = config.CONFIRM_MSG)
+            time.sleep(config.SLEEP_DURATION)
+            self.windowKasir.destroy()     
             
+    def footer_data(self):
+        tanggalSekarang = time.strftime("Tanggal : %d/%m/%Y")
+        waktuSekarang = time.strftime("Pukul : %H:%M")
+
+        self.windowKasir.labelFooterTanggal.config(text = tanggalSekarang)
+        # self.windowKasir.labelFooterWaktu.config(text = waktuSekarang)
+
+        self.windowKasir.after(1000, self.footer_data)
