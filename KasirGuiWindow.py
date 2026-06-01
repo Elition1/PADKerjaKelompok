@@ -12,6 +12,9 @@ class KasirGuiWindow(tk.Tk):
         self.geometry(f"{config.MAX_WIDTH}x{config.MAX_HEIGHT}+{config.START_WINDOW_X}+{config.START_WINDOW_Y}")
         self.resizable(False, False)
 
+        # WINDOWS ONLY komen untuk nonaktifkan
+        self.overrideredirect(True)
+
         # Logic Function
         self.logic = None
 
@@ -39,8 +42,8 @@ class KasirGuiWindow(tk.Tk):
         # Untuk set icon image supaya bekerja di Windows, Linux, dan macOS
         self.wm_iconphoto(True, self.icon_image)
 
-        # Menghapus bagian atas window
-        self.wm_attributes("-type", "splash")
+        # Menghapus bagian atas window (Linux)
+        # self.wm_attributes("-type", "splash")
 
         # config background default dan transparan window
         self.config(bg = config.BLACK)
@@ -48,6 +51,7 @@ class KasirGuiWindow(tk.Tk):
 
         # pembuatan style untuk manipulasi configurasi
         self.style = ttk.Style()
+        self.style.theme_use("default")
 
         # Manipulasi widget dengan tag ttk
         self.style.configure(
@@ -196,4 +200,18 @@ class KasirGuiWindow(tk.Tk):
             width = config.BUTTON_WIDTH,
             x = config.START_X_BUTTON_HAPUS,
             y = config.START_Y_BUTTON_HAPUS
+        )
+
+        self.listBoxCanvasKanan = tk.Listbox(
+            self.canvasBlockRight,
+            font = (config.FONT_TYPE, config.FONT_SIZE),
+            background = config.WHITE,
+            foreground = config.BLACK,
+            borderwidth = config.NON_BORDER,
+            cursor = "hand2",
+        )
+        self.listBoxCanvasKanan.place(
+            width = config.LIST_BOX_CANVAS_KANAN_WIDTH,
+            x = config.START_X_LIST_BOX_CANVAS_KANAN,
+            y = config.START_Y_LIST_BOX_CANVAS_KIRI
         )

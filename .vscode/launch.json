@@ -1,10 +1,12 @@
 {
-        "configurations": [
+    "version": "0.2.0",
+    "configurations": [
         {
-            "name": "Run Kasir",
+            "name": "Run Main",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/KasirGuiRunner.py"
+            "program": "${workspaceFolder}/PADKERKOM/PADKerjaKelompok/KasirGuiRunner.py",
+            "args": ["arg1", "arg2", "--flag", "value"]
         }
     ]
 }
