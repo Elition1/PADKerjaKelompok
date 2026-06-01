@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import os
 from PIL import Image, ImageTk
+import configGUI as config
 
 TEST_VALUES = ["BARANG 1 - 50ML - RP50.000", "BARANG 2 - 50ML - RP50.000", 
                "BARANG 3 - 50ML - RP50.000"]
@@ -39,7 +40,7 @@ class KasirGuiWindow(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("MRmarket")
-        self.geometry(f"{MAX_WIDTH}x{MAX_HEIGHT}+{START_WINDOW_X}+{START_WINDOW_Y}")
+        self.geometry(f"{config.MAX_WIDTH}x{config.MAX_HEIGHT}+{config.START_WINDOW_X}+{config.START_WINDOW_Y}")
         self.resizable(False, False)
         self.overrideredirect(True)
 
@@ -81,8 +82,8 @@ class KasirGuiWindow(tk.Tk):
         # Bikin Canvas kiri
         self.canvasBlockLeft = tk.Canvas(
             self,
-            width = LEFT_CANVAS_WIDTH,
-            height = LEFT_CANVAS_HEIGHT,
+            width = config.LEFT_CANVAS_WIDTH,
+            height = config.LEFT_CANVAS_HEIGHT,
             bg = "#8A8A75",
             highlightthickness = 0,
             
