@@ -2,39 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 import os
 from PIL import Image, ImageTk
-import configGUI as config
+import ConfigGUI as config
 
-TEST_VALUES = ["BARANG 1 - 50ML - RP50.000", "BARANG 2 - 50ML - RP50.000", 
-               "BARANG 3 - 50ML - RP50.000"]
-
-# font config
-FONT_TYPE = "Times New Roman"
-FONT_SIZE = 12
-FONT_FOREGROUND = "#000000"
-
-# kordinat bikin window
-START_WINDOW_X = 540
-START_WINDOW_Y = 200
-
-# besar window
-MAX_WIDTH = 920
-MAX_HEIGHT = 800
-
-# window canvas atas
-TOP_CANVAS_HEIGHT = 100
-
-# window canvas kanan
-RIGHT_CANVAS_WIDTH = 460
-RIGHT_CANVAS_HEIGHT = MAX_HEIGHT - TOP_CANVAS_HEIGHT
-
-# window canvas kiri
-LEFT_CANVAS_WIDTH = MAX_WIDTH - RIGHT_CANVAS_WIDTH
-LEFT_CANVAS_HEIGHT = MAX_HEIGHT - TOP_CANVAS_HEIGHT
-
-# Combo Box canvas kiri
-START_X_COMBO_BOX = 20
-START_Y_COMBO_BOX = 50
-COMBO_BOX_CANVAS_KIRI_WIDTH = (LEFT_CANVAS_WIDTH - START_X_COMBO_BOX) - START_X_COMBO_BOX 
 
 class KasirGuiWindow(tk.Tk):
     def __init__(self):
@@ -44,10 +13,17 @@ class KasirGuiWindow(tk.Tk):
         self.resizable(False, False)
         self.overrideredirect(True)
 
+        # Logic Function
+        self.logic = None
+
         # bikin canvas objek
         self.canvasBlockLeft = None
         self.canvasBlockTop = None
         self.canvasBlockRight = None
+
+        # bikin widget
+        self.comboBoxCanvasLeft = None
+
 
     def window_initializer(self):
         # directory mencari img file untuk semua device
@@ -62,20 +38,42 @@ class KasirGuiWindow(tk.Tk):
         self.wm_iconphoto(True, self.icon_image)
 
         # config background default dan transparan widget 10%
-        self.config(bg = "#000000")
-        self.attributes("-alpha", 10.0)
+        self.config(bg = config.BLACK)
+        self.attributes("-alpha", 0.90)
 
         # pembuatan style untuk manipulasi configurasi
         self.style = ttk.Style()
-        self.style.theme_use("default")
+
+        self.style.configure(
+            "Tambah.TButton",
+            font = (config.FONT_TYPE, config.FONT_BUTTON_SIZE),
+            foreground = config.WHITE,
+            background = config.GREEN,
+            anchor = "center"
+        )
+
+        self.style.map(
+            "Tambah.TButton",
+            background = [
+                ('active', config.LIGHT_GREEN),
+                ('pressed', config.WHITE),
+                ('!disabled', config.GREEN)
+            ]
+        )
+
+        self.style.configure(
+            "Hapus.TButton",
+            font = (config.FONT_TYPE, config.FONT_BUTTON_SIZE),
+            foreground = config.WHITE
+        )
 
     def draw_canvas(self):
         # Bikin Canvas atap
         self.canvasBlockTop = tk.Canvas(
             self,
-            height = TOP_CANVAS_HEIGHT,
-            bg = "#FFFFFF",
-            highlightthickness = 0,
+            height = config.TOP_CANVAS_HEIGHT,
+            bg = config.WHITE,
+            highlightthickness = config.NON_BORDER_CANVAS,
         )
         self.canvasBlockTop.pack(side = "top", fill = "x")
 
@@ -84,33 +82,51 @@ class KasirGuiWindow(tk.Tk):
             self,
             width = config.LEFT_CANVAS_WIDTH,
             height = config.LEFT_CANVAS_HEIGHT,
-            bg = "#8A8A75",
-            highlightthickness = 0,
+            bg = config.OLIVE_GREEN,
+            highlightthickness = config.NON_BORDER_CANVAS,
             
         )
         self.canvasBlockLeft.pack(side = "left")
 
         self.canvasBlockRight = tk.Canvas(
             self,
-            height = RIGHT_CANVAS_HEIGHT,
-            width = RIGHT_CANVAS_WIDTH,
-            bg = "#3D3B3B",
-            highlightthickness = 0
+            height = config.RIGHT_CANVAS_HEIGHT,
+            width = config.RIGHT_CANVAS_WIDTH,
+            bg = config.CHARCOAL,
+            highlightthickness = config.NON_BORDER_CANVAS
         )
         self.canvasBlockRight.pack(side = "right")        
 
     def draw_widget(self):
         self.comboBoxCanvasLeft = ttk.Combobox(
             self.canvasBlockLeft,
-            font = (FONT_TYPE, FONT_SIZE),
-            foreground = FONT_FOREGROUND,
-            values = TEST_VALUES,
+            font = (config.FONT_TYPE, config.FONT_SIZE),
+            foreground = config.BLACK,
+            values = config.TEST_VALUES,
             state = "readonly"
         )
         self.comboBoxCanvasLeft.place(
-            width = COMBO_BOX_CANVAS_KIRI_WIDTH,
-            x = START_X_COMBO_BOX,
-            y = START_Y_COMBO_BOX
+            width = config.COMBO_BOX_CANVAS_KIRI_WIDTH,
+            x = config.START_X_COMBO_BOX,
+            y = config.START_Y_COMBO_BOX
         )
-        self.comboBoxCanvasLeft.bind("<<ComboboxSelected>>", lambda e: self.comboBoxCanvasLeft.selection_clear())
-        self.comboBoxCanvasLeft.bind("<FocusIn>", lambda e: self.comboBoxCanvasLeft.selection_clear())  
+        self.comboBoxCanvasLeft.bind("<<ComboboxSelected>>", self.logic.non_background_effects)
+        self.comboBoxCanvasLeft.bind("<FocusIn>", self.logic.non_background_effects)
+
+        self.buttonTambahLeft = ttk.Button(
+            self.canvasBlockLeft,
+            text = config.FONT_BUTTON_TAMBAH_TEXT,
+            style = "Tambah.TButton"
+        )
+        self.buttonTambahLeft.place(
+            height = config.BUTTON_TAMBAH_HEIGHT,
+            width = config.BUTTON_TAMBAH_WIDTH,
+            x = config.START_X_BUTTON_TAMBAH,
+            y = config.START_Y_BUTTON_TAMBAH
+        )
+
+        self.buttonHapusRight = ttk.Button(
+            self.canvasBlockRight,
+            text = config.FONT_BUTTON_HAPUS_TEXT,
+
+        )
