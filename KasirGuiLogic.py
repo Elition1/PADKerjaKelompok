@@ -33,6 +33,6 @@ class KasirGuiLogic:
         waktuSekarang = time.strftime("Pukul : %H:%M")
 
         self.windowKasir.labelFooterTanggal.config(text = tanggalSekarang)
-        # self.windowKasir.labelFooterWaktu.config(text = waktuSekarang)
+        self.windowKasir.labelFooterWaktu.config(text = waktuSekarang)
 
         self.windowKasir.after(1000, self.footer_data)
