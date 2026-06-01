@@ -11,10 +11,12 @@ class KasirGuiWindow(tk.Tk):
         self.title("MRmarket")
         self.geometry(f"{config.MAX_WIDTH}x{config.MAX_HEIGHT}+{config.START_WINDOW_X}+{config.START_WINDOW_Y}")
         self.resizable(False, False)
-        self.overrideredirect(True)
 
         # Logic Function
         self.logic = None
+
+        # Variabel Function
+        self.jumlahBarangVar = tk.StringVar()
 
         # bikin canvas objek
         self.canvasBlockLeft = None
@@ -37,19 +39,33 @@ class KasirGuiWindow(tk.Tk):
         # Untuk set icon image supaya bekerja di Windows, Linux, dan macOS
         self.wm_iconphoto(True, self.icon_image)
 
-        # config background default dan transparan widget 10%
+        # Menghapus bagian atas window
+        self.wm_attributes("-type", "splash")
+
+        # config background default dan transparan window
         self.config(bg = config.BLACK)
-        self.attributes("-alpha", 0.90)
+        self.attributes("-alpha", 1)
 
         # pembuatan style untuk manipulasi configurasi
         self.style = ttk.Style()
+
+        # Manipulasi widget dengan tag ttk
+        self.style.configure(
+            "Keluar.TButton",
+            font = (config.FONT_TYPE, config.FONT_BUTTON_SIZE),
+            foreground = config.BLACK,
+            background = config.WHITE,
+            anchor = config.ANCHOR_CENTER,
+            borderwidth = config.NON_BORDER
+        )
 
         self.style.configure(
             "Tambah.TButton",
             font = (config.FONT_TYPE, config.FONT_BUTTON_SIZE),
             foreground = config.WHITE,
             background = config.GREEN,
-            anchor = "center"
+            anchor = config.ANCHOR_CENTER,
+            borderwidth = config.NON_BORDER
         )
 
         self.style.map(
@@ -64,8 +80,21 @@ class KasirGuiWindow(tk.Tk):
         self.style.configure(
             "Hapus.TButton",
             font = (config.FONT_TYPE, config.FONT_BUTTON_SIZE),
-            foreground = config.WHITE
+            foreground = config.WHITE,
+            background = config.DARK_RED,
+            anchor = config.ANCHOR_CENTER,
+            borderwidth = config.NON_BORDER
         )
+
+        self.style.map(
+            "Hapus.TButton",
+            background = [
+                ('active', config.RED),
+                ('pressed', config.WHITE),
+                ('!disabled', config.DARK_RED)
+            ]
+        )
+
 
     def draw_canvas(self):
         # Bikin Canvas atap
@@ -88,6 +117,7 @@ class KasirGuiWindow(tk.Tk):
         )
         self.canvasBlockLeft.pack(side = "left")
 
+        # Bikin Canvas kanan
         self.canvasBlockRight = tk.Canvas(
             self,
             height = config.RIGHT_CANVAS_HEIGHT,
@@ -97,7 +127,9 @@ class KasirGuiWindow(tk.Tk):
         )
         self.canvasBlockRight.pack(side = "right")        
 
+    # Method pembuatan widget 
     def draw_widget(self):
+        # buat combo box widget di canvas kiri
         self.comboBoxCanvasLeft = ttk.Combobox(
             self.canvasBlockLeft,
             font = (config.FONT_TYPE, config.FONT_SIZE),
@@ -113,14 +145,42 @@ class KasirGuiWindow(tk.Tk):
         self.comboBoxCanvasLeft.bind("<<ComboboxSelected>>", self.logic.non_background_effects)
         self.comboBoxCanvasLeft.bind("<FocusIn>", self.logic.non_background_effects)
 
+        self.jumlahBarangEntryBoxCanvasLeft = ttk.Entry(
+            self.canvasBlockLeft,
+            font = (config.FONT_TYPE, config.FONT_SIZE),
+            foreground = config.BLACK,
+            textvariable = self.jumlahBarangVar
+        )
+        self.jumlahBarangEntryBoxCanvasLeft.place(
+            width = config.ENTRY_BOX_CANVAS_KIRI_WIDTH,
+            x = config.START_X_ENTRY_BOX,
+            y = config.START_Y_ENTRY_BOX
+        )
+
+        self.buttonKeluarTop = ttk.Button(
+            self.canvasBlockTop,
+            text = config.FONT_BUTTON_KELUAR_TEXT,
+            style = "Keluar.TButton",
+            cursor = config.CURSOR_HAND,
+            command = self.logic.keluar_app
+        )
+        self.buttonKeluarTop.place(
+            height = config.BUTTON_HEIGHT,
+            width = config.BUTTON_WIDTH,
+            x = config.START_X_BUTTON_KELUAR,
+            y = config.START_Y_BUTTON_KELUAR
+        )
+
         self.buttonTambahLeft = ttk.Button(
             self.canvasBlockLeft,
             text = config.FONT_BUTTON_TAMBAH_TEXT,
-            style = "Tambah.TButton"
+            style = "Tambah.TButton",
+            cursor = config.CURSOR_HAND,
+            command = self.logic.tambah_barang
         )
         self.buttonTambahLeft.place(
-            height = config.BUTTON_TAMBAH_HEIGHT,
-            width = config.BUTTON_TAMBAH_WIDTH,
+            height = config.BUTTON_HEIGHT,
+            width = config.BUTTON_WIDTH,
             x = config.START_X_BUTTON_TAMBAH,
             y = config.START_Y_BUTTON_TAMBAH
         )
@@ -128,5 +188,12 @@ class KasirGuiWindow(tk.Tk):
         self.buttonHapusRight = ttk.Button(
             self.canvasBlockRight,
             text = config.FONT_BUTTON_HAPUS_TEXT,
-
+            style = "Hapus.TButton",
+            cursor = config.CURSOR_HAND,
+        )
+        self.buttonHapusRight.place(
+            height = config.BUTTON_HEIGHT,
+            width = config.BUTTON_WIDTH,
+            x = config.START_X_BUTTON_HAPUS,
+            y = config.START_Y_BUTTON_HAPUS
         )
