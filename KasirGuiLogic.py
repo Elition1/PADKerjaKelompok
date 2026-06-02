@@ -2,21 +2,24 @@ import tkinter as tk
 from tkinter import messagebox
 from datetime import datetime
 import time
+import csv
 import ConfigGUI as config
+import os
 
 # Menghubungkan kelas data pandas tugasmu ke dalam file logika
 from KasirGuiData import KasirGuiData
 
 class KasirGuiLogic:
     def __init__(self, windowKasir):
+        base_dir = os.path.dirname(os.path.abspath(__file__))
         self.windowKasir = windowKasir
         # Dictionary menampung data pesanan sementara sebelum dibayar
         self.pesananUser = {}
+        # Ambil Data CSV
+        path_csv_produk = os.path.join(base_dir, "MenuProduk.csv")
         # Menyiapkan objek simpan data pandas untuk laporan CSV tugasmu
         self.laporan_data = KasirGuiData()
-
-    def non_background_effects(self, event = None):
-        self.windowKasir.comboBoxCanvasLeft.selection_clear()
+        self.ambil_data(path_csv_produk)
 
     # method untuk menambah produk ke listbox menggunakan tombol tambah
     def tambah_barang(self):
@@ -31,48 +34,101 @@ class KasirGuiLogic:
                 messagebox.showwarning("Peringatan", "Jumlah barang harus lebih dari 0!")
                 return
 
-            # Menyimpan data produk ke dictionary pesananUser agar bisa dibaca pandas
-            self.pesananUser[produk_terpilih] = {
-                "Harga": 50000, # dumi harga default produk kelompok Rp50.000
-                "jumlahBarang": jumlahBarang
-            }
+            nama_produk, harga_text = produk_terpilih.split(" - Rp")
+            harga = int(harga_text.replace(",", ""))
 
-            # menampilkan barang produk yang dipilih ke listbox milik temanmu
-            self.windowKasir.frameCanvasKanan.insert("end", f"{produk_terpilih} x{jumlahBarang}")
-            print(jumlahBarang)
-            print("Button Clicked")
+            if produk_terpilih in self.pesananUser:
+                messagebox.showerror(title="Error", message=config.ERROR_MSG_DUPLIKAT)
+                self.pesananUser[produk_terpilih]["jumlahBarang"] = jumlahBarang
+
+                semua_item = self.windowKasir.treeViewCanvasKanan.get_children()
+
+                for data_item in semua_item:
+                    hasil_item = self.windowKasir.treeViewCanvasKanan.item(data_item, "values")
+                    if hasil_item and hasil_item[0] == nama_produk:
+                        subtotal = jumlahBarang * harga 
+                        self.windowKasir.treeViewCanvasKanan.item(
+                            data_item,
+                            values = (
+                                nama_produk,
+                                jumlahBarang,
+                                f"Rp{harga:,}",
+                                f"Rp{subtotal:,}"
+                            )
+                        )
+            # Menyimpan data produk ke dictionary pesananUser agar bisa dibaca pandas
+            else:    
+                self.pesananUser[produk_terpilih] = {
+                    "Harga": harga, # dumi harga default produk kelompok Rp50.000
+                    "jumlahBarang": jumlahBarang
+                }
+                subtotal = harga * jumlahBarang
+                # menampilkan barang produk yang dipilih ke listbox milik temanmu
+                self.windowKasir.treeViewCanvasKanan.insert(
+                    "", 
+                    "end",
+                    values = (
+                        nama_produk,
+                        jumlahBarang,
+                        f"Rp{harga:,}",
+                        f"Rp{subtotal:,}"
+                    )
+                )
+                
+            total = 0
+            for data in self.pesananUser.values():
+                total += data["Harga"] * data["jumlahBarang"]
+
+            self.windowKasir.labelTotal.config(text = f"Total : Rp{total:,}")
         except ValueError:
             messagebox.showerror(title="Error", message=config.ERROR_MSG_PENAMBAHAN)
             self.windowKasir.jumlahBarangEntryBoxCanvasLeft.delete(0, 'end')
 
     # method untuk menghapus item yang sedang diklik/dipilih di Listbox temanmu
     def fungsi_hapus(self):
-        seleksi = self.windowKasir.frameCanvasKanan.curselection()
+        seleksi = self.windowKasir.treeViewCanvasKanan.selection()
         if seleksi:
-            item_teks = self.windowKasir.frameCanvasKanan.get(seleksi)
-            nama_produk = item_teks.split(" x")[0] 
-            
-            if nama_produk in self.pesananUser:
-                del self.pesananUser[nama_produk]
-                
-            self.windowKasir.frameCanvasKanan.delete(seleksi)
-            messagebox.showinfo("Sukses", f"{nama_produk} dihapus dari daftar")
+           item_id = seleksi[0]
+
+           data_item = self.windowKasir.treeViewCanvasKanan.item(item_id)
+           nama_produk = data_item["values"][0]
+
+           for key in list(self.pesananUser.keys()):
+               if key.startswith(nama_produk):
+                   del self.pesananUser[key]
+                   break
+
+           self.windowKasir.treeViewCanvasKanan.delete(item_id)
+
+           total = 0
+
+           for data in self.pesananUser.values():
+               total += data["Harga"] * data["jumlahBarang"]
+
+           self.windowKasir.labelTotal.config(text = f"Total : Rp{total:,}")
+
+           messagebox.showinfo(
+              "Sukses",
+              f"{nama_produk} dihapus dari daftar"
+           )
         else:
-            messagebox.showwarning("Error", config.ERROR_MSG_PENGHAPUSAN)
+           messagebox.showwarning(
+               "Error",
+               config.ERROR_MSG_PENGHAPUSAN
+           )
 
     # KODE BARU: Kebal dari jebakan ValueError palsu
     def fungsi_pembayaran(self):
         # 1. Cek apakah ada barang yang dibeli
         if not self.pesananUser:
-            messagebox.showwarning("Peringatan", "Pesanan masih kosong!")
+            messagebox.showwarning("Peringatan", config.ERROR_MSG_PEMBAYARAN_TIDAK_ADA_PESANAN)
             return
             
         # 2. Hitung total belanjaan secara aman dengan pembulatan bulat
-        total = 0
-        for nama, data in self.pesananUser.items():
-            harga = int(data.get("Harga", 50000))
-            jumlah = int(data.get("jumlahBarang", 1))
-            total += (harga * jumlah)
+        subtotal = 0
+        for name, data in self.pesananUser.items():
+            subtotal += int(data.get("Harga")) * int(data.get("jumlahBarang"))
+        total = subtotal
         
         # 3. Munculkan dialog box kecil untuk input uang belanjaan
         from tkinter import simpledialog
@@ -103,7 +159,10 @@ class KasirGuiLogic:
         
         # 6. Cek kecukupan uang
         if bayar < total_akhir:
-            messagebox.showerror("Gagal", f"Uang kurang! Total harus dibayar: Rp{total_akhir:,}")
+            messagebox.showerror(
+                "Gagal",
+                config.ERROR_MSG_PEMBAYARAN_TIDAK_MENCUKUPI.format(total_akhir = total_akhir)
+            )
             return
             
         kembalian = bayar - total_akhir
@@ -119,8 +178,8 @@ class KasirGuiLogic:
         messagebox.showinfo("Pembayaran Berhasil", isi_struk)
         
         # 9. Bersihkan pesanan setelah sukses dibayar
-        self.pesananUser.clear()
-        self.windowKasir.frameCanvasKanan.delete(0, tk.END)
+        self.reset_pesanan()
+
         self.windowKasir.jumlahBarangEntryBoxCanvasLeft.delete(0, tk.END)
 
     def cetakStruk(self, total, diskon, bayar, kembalian):
@@ -139,6 +198,30 @@ class KasirGuiLogic:
         lines.append(f"Bayar : Rp{bayar:,}")
         lines.append(f"Kembalian : Rp{kembalian:,}")
         return "\n".join(lines)
+
+    def ambil_data(self, path_csv_produk):
+        listProduk = []
+
+        with open(path_csv_produk, encoding="utf-8") as file:
+            reader = csv.DictReader(file, delimiter=";")
+            for row in reader:
+                listProduk.append(f"{row['Nama']} - Rp{row['Harga']}")
+
+        self.windowKasir.comboBoxCanvasLeft['values'] = listProduk
+
+    def reset_pesanan(self):
+        self.pesananUser.clear()
+
+        for item in self.windowKasir.treeViewCanvasKanan.get_children():
+           self.windowKasir.treeViewCanvasKanan.delete(item)
+
+        total = 0
+
+        for data in self.pesananUser.values():
+               total += data["Harga"] * data["jumlahBarang"]
+
+        self.windowKasir.labelTotal.config(text = f"Total : Rp{total:,}")
+
 
     def keluar_app(self):
         konfirmasi = messagebox.askyesno(title = "Keluar", message = config.EXIT_MSG)
