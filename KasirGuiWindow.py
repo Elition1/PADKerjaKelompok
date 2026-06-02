@@ -13,7 +13,7 @@ class KasirGuiWindow(tk.Tk):
         self.resizable(False, False)
 
         # WINDOWS ONLY komen untuk nonaktifkan
-        self.overrideredirect(True)
+        # self.overrideredirect(True)
 
         # Logic Function
         self.logic = None
@@ -50,7 +50,7 @@ class KasirGuiWindow(tk.Tk):
         self.wm_iconphoto(True, self.icon_image)
 
         # Menghapus bagian atas window (Linux)
-        # self.wm_attributes("-type", "splash")
+        self.wm_attributes("-type", "splash")
 
         # config background default dan transparan window
         self.config(bg = config.BLACK)
@@ -63,7 +63,7 @@ class KasirGuiWindow(tk.Tk):
         # Manipulasi widget dengan tag ttk
         self.style.configure(
             "Keluar.TButton",
-            font = (config.FONT_TYPE, config.FONT_SIZE_BUTTON_SIZE),
+            font = (config.FONT_TYPE, config.FONT_BUTTON_SIZE),
             foreground = config.BLACK,
             background = config.WHITE,
             anchor = config.ANCHOR_CENTER,
@@ -201,7 +201,7 @@ class KasirGuiWindow(tk.Tk):
             command = self.logic.keluar_app
         )
         self.buttonKeluarTop.place(
-            height = config.BUTTON_KELUAR_ATAS_HEIGHT,
+            height = config.BUTTON_HEIGHT,
             width = config.BUTTON_KELUAR_ATAS_WIDTH,
             x = config.START_X_BUTTON_KELUAR,
             y = config.START_Y_BUTTON_KELUAR
@@ -247,27 +247,20 @@ class KasirGuiWindow(tk.Tk):
             y = config.START_Y_BUTTON_PEMBAYARAN
         )
 
-        self.frameCanvasKiri = tk.Frame(
-            self.canvasBlockLeft,
+        self.frameCanvasKanan = tk.Listbox(
+            self.canvasBlockRight,
+            font = (config.FONT_TYPE, config.FONT_SIZE),
             background = config.WHITE,
+            foreground = config.BLACK,
             borderwidth = config.NON_BORDER,
             cursor = "hand2",
         )
-        self.frameCanvasKiri.place(
-            width = config.FRAME_CANVAS_KIRI_WIDTH,
-            height = config.FRAME_CANVAS_KIRI_HEIGHT,
-            x = config.START_X_FRAME_CANVAS_KIRI,
+        self.frameCanvasKanan.place(
+            width = config.FRAME_CANVAS_KANAN_WIDTH,
+            x = config.START_X_FRAME_CANVAS_KANAN,
             y = config.START_Y_FRAME_CANVAS_KIRI
         )
-
-        self.labelDaftarBarang = tk.Label(
-            self.frameCanvasKiri,
-            font = (config.FONT_TYPE, config.FONT_SIZE),
-            text = config.NAMA_BARANG_MSG,
-            background = self.canvasBlockLeft.cget("bg"),
-            foreground = config.BLACK  
-        )
-    
+        
 
         self.labelNamaBarang = tk.Label(
             self.canvasBlockLeft,
@@ -303,16 +296,4 @@ class KasirGuiWindow(tk.Tk):
         self.labelFooterTanggal.place(
             x = config.START_X_LABEL_TANGGAL,
             y = config.START_Y_LABEL_TANGGAL
-        )
-
-        self.labelFooterWaktu = tk.Label(
-            self.footerCanvas,
-            font = (config.FONT_TYPE, config.FONT_SIZE),
-            text = "Pukul : 00:00",
-            background = self.footerCanvas.cget("bg"),
-            foreground = config.BLACK
-        )
-        self.labelFooterWaktu.place(
-            x = config.START_X_LABEL_WAKTU,
-            y = config.START_Y_LABEL_WAKTU
         )
