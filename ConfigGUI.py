@@ -122,14 +122,13 @@ START_Y_LABEL_TANGGAL = 2
 START_X_LABEL_WAKTU = START_X_LABEL_TANGGAL + 150
 START_Y_LABEL_WAKTU = START_Y_LABEL_TANGGAL
 
-
-
 # Error Message
 ERROR_MSG_DUPLIKAT = "Sudah ada barang dalam pesanan dan jumlahnya sama "
 ERROR_MSG_PENAMBAHAN = "Masukkan Bilangan Valid!!"
 ERROR_MSG_PENGHAPUSAN = "Masukkan Barang yang ingin dihapus"
 ERROR_MSG_PEMBAYARAN_TIDAK_MENCUKUPI = "Uang kurang! Total harus dibayar: Rp{total_akhir:,}"
 ERROR_MSG_PEMBAYARAN_TIDAK_ADA_PESANAN = "Pesanan masih kosong!"
+ERROR_MSG_RESET_TIDAK_ADA_DIHAPUS = "Tidak ada barang yang dihapus"
 
 # Exit Message
 EXIT_MSG = "Apakah Anda yakin ingin keluar?"

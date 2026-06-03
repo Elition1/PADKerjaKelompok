@@ -86,6 +86,10 @@ class KasirGuiLogic:
 
     # method untuk menghapus item yang sedang diklik/dipilih di Listbox temanmu
     def fungsi_hapus(self):
+        if not self.pesananUser:
+            messagebox.showwarning("Peringatan", config.ERROR_MSG_RESET_TIDAK_ADA_DIHAPUS)
+            return
+
         seleksi = self.windowKasir.treeViewCanvasKanan.selection()
         if seleksi:
            item_id = seleksi[0]
@@ -210,6 +214,10 @@ class KasirGuiLogic:
         self.windowKasir.comboBoxCanvasLeft['values'] = listProduk
 
     def reset_pesanan(self):
+        if not self.pesananUser:
+            messagebox.showwarning("Peringatan", config.ERROR_MSG_RESET_TIDAK_ADA_DIHAPUS)
+            return
+        
         self.pesananUser.clear()
 
         for item in self.windowKasir.treeViewCanvasKanan.get_children():

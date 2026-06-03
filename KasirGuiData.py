@@ -10,7 +10,7 @@ class KasirGuiData:
         self.nama_file = os.path.join(base_dir, "Laporan.csv")
 
         # membuat daftar nama kolom untuk bagian judul tabel laporan penjualan
-        self.kolom_header = ["No", "Nama Barang", "Harga Barang", "Jumlah Barang", "Total"]
+        self.kolom_header = ["No", "Nama Barang", "Harga Barang", "Jumlah Barang", "SubTotal"]
 
     def simpan_transaksi(self, pesanan_user):
         data_tabel = []
@@ -31,17 +31,17 @@ class KasirGuiData:
                 "Nama Barang": nama,
                 "Harga Barang": data["Harga"],
                 "Jumlah Barang": data["jumlahBarang"],
-                "Total": subtotal
+                "SubTotal": subtotal
             }
             data_tabel.append(baris)
-            no += 1 
+
 
         baris_total = {
             "No": "Total :",
             "Nama Barang" : "",
             "Harga Barang" : "",
             "Jumlah Barang" : "",
-            "Total" : total
+            "SubTotal" : total
         }
         data_tabel.append(baris_total)
         # 3. Membuat DataFrame baru dari list data tabel yang sudah dikumpulkan
@@ -51,4 +51,4 @@ class KasirGuiData:
         if os.path.exists(self.nama_file):
             df_baru.to_csv(self.nama_file, mode='a', header=False, index=False, sep = ';', lineterminator='\n', encoding='utf-8')
         else:
-            df_baru.to_csv(self.nama_file, mode='w', header=True, index=False, sep = ';', lineterminator='\n', encoding='utf-8')
+            df_baru.to_csv(self.nama_file, mode='w', header=self.kolom_header, index=False, sep = ';', lineterminator='\n', encoding='utf-8')
